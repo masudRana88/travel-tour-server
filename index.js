@@ -24,6 +24,7 @@ async function run() {
     await client.connect();
     const database = client.db("travel-tour");
     const destinationCollect = database.collection("destinationCollect");
+    const orderCollect = database.collection("orderCollect");
     //   add a service
       app.post('/destinations', async (req, res) => {
           const data = req.body;
@@ -68,6 +69,29 @@ async function run() {
       const result = await destinationCollect.updateOne(query, upData);
       res.json(result)
     })
+    // Manage order
+    app.post('/manage-oder', async (req, res) => {
+      const data = req.body;
+      const result = await orderCollect.insertOne(data)
+      res.send(result);
+      
+    })
+    // Get Order booking
+    app.get('/manage-oder/:email', async (req, res) => {
+      const email = req.params.email
+      const cursor = orderCollect.find({})
+      const result = await cursor.toArray()
+      const allData = result.filter(rs => rs.email === email);
+      res.json(allData)
+    });
+    // DELETE Order booking
+    app.delete('/manage-oder/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollect.deleteOne(query);
+      res.json(result)
+      console.log('delete id', id)
+    });
   } finally {
     // await client.close();
   }
