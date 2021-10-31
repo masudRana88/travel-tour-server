@@ -69,7 +69,7 @@ async function run() {
       const result = await destinationCollect.updateOne(query, upData);
       res.json(result)
     })
-    // Manage order
+    // Manage Add order
     app.post('/manage-oder', async (req, res) => {
       const data = req.body;
       const result = await orderCollect.insertOne(data)
@@ -84,6 +84,25 @@ async function run() {
       const allData = result.filter(rs => rs.email === email);
       res.json(allData)
     });
+    // Get All order booking
+    app.get("/order", async (req, res) => {
+      console.log("hit")
+      const coursor = orderCollect.find({});
+      const result = await coursor.toArray();
+      res.send(result)
+    })
+    // Approve order 
+    app.patch("/manage-oder/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const upData = {
+        $set: {
+          status : "approved"
+        }
+      }
+      const result = await orderCollect.updateOne(query, upData);
+      res.json(result)
+    })
     // DELETE Order booking
     app.delete('/manage-oder/:id', async (req, res) => {
       const id = req.params.id;
